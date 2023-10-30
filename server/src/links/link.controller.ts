@@ -5,10 +5,14 @@ import {
   Get,
   Param,
   Post,
+  Put,
+  Req,
   UseGuards,
 } from "@nestjs/common";
 import { JwtAuthGuard } from "../guards/jwt-auth/jwt-auth.guard";
-import { LinkDto } from "./dto/link.dto";
+import { User } from "../users/users.model";
+import { ChangeLinkOrderDto } from "./dto/change-link-order.dto";
+import { CreateLinkDto } from "./dto/create-link.dto";
 import { LinkService } from "./link.service";
 
 @Controller("link")
@@ -17,8 +21,8 @@ export class LinkController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() LinkDto: LinkDto) {
-    return this.linkService.createLink(LinkDto);
+  create(@Body() dto: CreateLinkDto, @Req() req: Request & { user: User }) {
+    return this.linkService.createLink(dto, req);
   }
 
   @Get("/:profileId")
@@ -26,10 +30,14 @@ export class LinkController {
     return this.linkService.getLinkByProfileId(profileId);
   }
 
-  // @Get()
-  // getAll() {
-  //   return this.linkService.getAllLinks();
-  // }
+  @Put()
+  @UseGuards(JwtAuthGuard)
+  changeLinkOrder(
+    @Body() dto: ChangeLinkOrderDto,
+    @Req() req: Request & { user: User }
+  ) {
+    return this.linkService.changeLinkOrder(dto, req);
+  }
 
   @UseGuards(JwtAuthGuard)
   @Delete(":id")

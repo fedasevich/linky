@@ -1,23 +1,47 @@
-import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
-import { ProfileDto } from "./dto/profile.dto";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Req,
+  UseGuards,
+} from "@nestjs/common";
+import { JwtAuthGuard } from "../guards/jwt-auth/jwt-auth.guard";
+import { User } from "../users/users.model";
+import { ChangeDescriptionDto } from "./dto/change-description.dto";
+import { CreateProfileDto } from "./dto/create-profile.dto";
 import { ProfileService } from "./profile.service";
 
 @Controller("profile")
 export class ProfileController {
   constructor(private profileService: ProfileService) {}
+
   @Post()
-  create(@Body() ProfileDto: ProfileDto) {
-    return this.profileService.createProfile(ProfileDto);
+  @UseGuards(JwtAuthGuard)
+  create(@Body() dto: CreateProfileDto, @Req() req: Request & { user: User }) {
+    return this.profileService.createProfile(dto, req);
   }
 
-  @Get("/:profile")
-  getByValue(@Param() params: ProfileDto) {
-    return this.profileService.getProfileByValue(params);
+  @Get("name/:name")
+  getByUserName(@Param("name") name: number) {
+    return this.profileService.getProfileByUserName(name.toString());
   }
 
-  @Get()
-  getAll() {
-    return this.profileService.getAllProfiles();
+  @Get("user/:userId")
+  getByUserId(@Param("userId") userId: number) {
+    return this.profileService.getProfileByUserId(userId);
+  }
+
+  @Put("description")
+  @UseGuards(JwtAuthGuard)
+  changeDescription(
+    @Body() dto: ChangeDescriptionDto,
+    @Req() req: Request & { user: User }
+  ) {
+    return this.profileService.changeDescription(dto, req);
   }
 
   @Delete(":id")

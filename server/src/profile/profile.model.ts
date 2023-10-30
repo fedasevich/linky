@@ -31,7 +31,7 @@ export class Profile extends Model<Profile, GroupCreationAttrs> {
   userId: number;
 
   @Column({ type: DataType.STRING, allowNull: true })
-  profileName: string;
+  name: string;
 
   @Column({ type: DataType.STRING, allowNull: true })
   description: string;

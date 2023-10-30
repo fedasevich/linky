@@ -1,18 +1,24 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Button, Text } from "react-native";
+import { ActivityIndicator } from "react-native";
 import Toast from "react-native-toast-message";
+import { Home } from "../components/Home/Home";
+import { SomeonesProfile } from "../components/Home/SomeonesProfile";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
+import { HomeScreenName } from "../libs/enums/Home/HomeScreenName";
 import { isErrorWithMessage } from "../libs/helpers/isErrorWithMessage";
 import { isFetchBaseQueryError } from "../libs/helpers/isFetchBaseQueryError";
-import { RootStackParamList } from "../libs/types/Routes/RootStackParamList.type";
+import { HomeStackParamList } from "../libs/types/Routes/HomeStackParamList.type";
 import { FetchError } from "../store/api";
 import { userApi } from "../store/reducers/user/UserApi";
 import { logOut, setCredentials } from "../store/reducers/user/UserSlice";
 
+const HomeStack = createNativeStackNavigator<HomeStackParamList>();
+
 export function HomeScreen() {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<NavigationProp<HomeStackParamList>>();
   const dispatch = useAppDispatch();
 
   const user = useAppSelector((state) => state.userReducer.user);
@@ -32,7 +38,7 @@ export function HomeScreen() {
       check()
         .unwrap()
         .then(({ token }) => {
-          console.log("new  " + token);
+          console.log("new" + token);
           dispatch(
             setCredentials({
               token,
@@ -59,10 +65,27 @@ export function HomeScreen() {
     return <ActivityIndicator size="large" />;
   }
 
+  console.log("user" + user);
+
   return (
-    <>
-      <Button title={"SignUp"} onPress={() => navigation.navigate("Auth")} />
-      <Text>{user?.id}</Text>
-    </>
+    <HomeStack.Navigator>
+      <HomeStack.Screen
+        name={HomeScreenName.HOME}
+        component={Home}
+        options={{ headerShown: false }}
+      />
+
+      <HomeStack.Screen
+        name={HomeScreenName.SOMEONES_PROFILE}
+        options={({
+          route: {
+            params: {
+              params: { searchQuery },
+            },
+          },
+        }) => ({ title: `@${searchQuery} profile` })}
+        component={SomeonesProfile}
+      />
+    </HomeStack.Navigator>
   );
 }

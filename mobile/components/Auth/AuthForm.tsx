@@ -1,9 +1,11 @@
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Button, Text, TextInput, View } from "react-native";
+import { Button, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
-import { useDispatch } from "react-redux";
+import { useAppDispatch } from "../../hooks/redux";
+import { HomeScreenName } from "../../libs/enums/Home/HomeScreenName";
+import { RootScreenName } from "../../libs/enums/RootScreenName";
 import { isErrorWithMessage } from "../../libs/helpers/isErrorWithMessage";
 import { isFetchBaseQueryError } from "../../libs/helpers/isFetchBaseQueryError";
 import { RootStackParamList } from "../../libs/types/Routes/RootStackParamList.type";
@@ -17,7 +19,7 @@ type FormData = {
 };
 
 const AuthForm = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const [isLogin, setIsLogin] = useState(true);
@@ -26,7 +28,9 @@ const AuthForm = () => {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>();
+  } = useForm<FormData>({
+    defaultValues: { email: "testing@gmail.com", password: "1234" },
+  });
 
   const [signIn, { isLoading: signInIsLoading }] = userApi.useSignInMutation();
   const [signUp, { isLoading: signUpIsLoading }] = userApi.useSignUpMutation();
@@ -35,17 +39,22 @@ const AuthForm = () => {
     await signIn(formData)
       .unwrap()
       .then((data) => {
-        console.log("asdasd" + JSON.stringify(data));
+        Toast.show({
+          type: "success",
+          text1: "Successfully signed in.",
+        });
         dispatch(setCredentials(data));
+        navigation.navigate(RootScreenName.HOME, {
+          screen: HomeScreenName.HOME,
+        });
       })
       .catch((error) => {
-        console.log(JSON.stringify(error));
         if (isErrorWithMessage(error)) {
-          Toast.show({ type: "success", text1: error.message });
+          Toast.show({ type: "error", text1: error.message });
         } else if (isFetchBaseQueryError(error)) {
           const errMsg =
             "error" in error ? error.error : (error as FetchError).data.message;
-          Toast.show({ type: "success", text1: errMsg });
+          Toast.show({ type: "error", text1: errMsg });
         }
       });
   };
@@ -54,7 +63,14 @@ const AuthForm = () => {
     await signUp(formData)
       .unwrap()
       .then((data) => {
+        Toast.show({
+          type: "success",
+          text1: "Account was successfully created.",
+        });
         dispatch(setCredentials(data));
+        navigation.navigate(RootScreenName.HOME, {
+          screen: HomeScreenName.HOME,
+        });
       })
       .catch((error) => {
         if (isErrorWithMessage(error)) {
@@ -75,15 +91,23 @@ const AuthForm = () => {
     }
   };
 
+  const handleLoginToggle = () => {
+    setIsLogin((prev) => !prev);
+  };
+
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <View className="bg-red-100">
-        <Text>{isLogin ? "Login" : "Sign Up"}</Text>
+    <View className="text-white flex-1 justify-center items-center w-full">
+      <View className="w-full p-5">
+        <Text className="text-white text-3xl mb-3 font-bold">
+          {isLogin ? "Sign In" : "Sign Up"}
+        </Text>
         <Controller
           control={control}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
               placeholder="Email"
+              className="bg-neutral-600 px-3 py-2 rounded-lg text-white mb-3"
+              placeholderTextColor={"#FFFFFF"}
               onChangeText={onChange}
               onBlur={onBlur}
               value={value}
@@ -99,7 +123,9 @@ const AuthForm = () => {
           }}
         />
         {errors.email && (
-          <Text style={{ color: "red" }}>{errors.email.message as string}</Text>
+          <Text className="text-red-600 mb-3">
+            {errors.email.message as string}
+          </Text>
         )}
 
         <Controller
@@ -107,6 +133,8 @@ const AuthForm = () => {
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
               placeholder="Password"
+              className="bg-neutral-600 px-3 py-2 rounded-lg text-white mb-3"
+              placeholderTextColor={"#FFFFFF"}
               onChangeText={onChange}
               onBlur={onBlur}
               value={value}
@@ -123,12 +151,12 @@ const AuthForm = () => {
           }}
         />
         {errors.password && (
-          <Text style={{ color: "red" }}>
+          <Text className="text-red-600 mb-3">
             {errors.password.message as string}
           </Text>
         )}
 
-        {/* <Text>
+        {/* <Text className="text-white">
           <Link to={RESET_PASSWORD_ROUTE}>Forgot password?</Link>
         </Text> */}
 
@@ -138,17 +166,23 @@ const AuthForm = () => {
         />
       </View>
       <View>
-        {/* <Text>
+        <View className="text-whit flex items-center justify-center flex-row gap-1">
           {isLogin ? (
-            <Text>
-              Don't have an account? <Link to={SIGN_UP_ROUTE}>Sign Up</Link>
-            </Text>
+            <>
+              <Text className="text-white">Don't have an account?</Text>
+              <TouchableOpacity onPress={handleLoginToggle} className="p-0 m-0">
+                <Text className="text-white font-bold">Sign Up</Text>
+              </TouchableOpacity>
+            </>
           ) : (
-            <Text>
-              Have an account? <Link to={SIGN_IN_ROUTE}>Sign In</Link>
-            </Text>
+            <>
+              <Text className="text-white">Have an account?</Text>
+              <TouchableOpacity onPress={handleLoginToggle}>
+                <Text className="text-white font-bold">Sign In</Text>
+              </TouchableOpacity>
+            </>
           )}
-        </Text> */}
+        </View>
       </View>
     </View>
   );

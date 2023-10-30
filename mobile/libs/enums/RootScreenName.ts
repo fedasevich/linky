@@ -1,9 +1,6 @@
 const RootScreenName = {
   HOME: "Home",
-  AUTH: "Auth",
-  CONTACTS: "Contacts",
-  GALLERY: "Gallery",
-  TODO_LIST: "TodoList",
+  PROFILE: "Profile",
 } as const;
 
 export { RootScreenName };

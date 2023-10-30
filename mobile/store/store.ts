@@ -2,7 +2,6 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 
 import { api } from "./api";
 import userReducer from "./reducers/user/UserSlice";
-
 export type ThunkExtraServices = {
   test: () => void;
 };

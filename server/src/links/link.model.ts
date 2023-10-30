@@ -10,13 +10,16 @@ import {
 import { Profile } from "../profile/profile.model";
 import { LinkType } from "./link-types/linkType.model";
 
-interface GroupCreationAttrs {
-  number: number;
-  studAmount: number;
+interface LinkCreationAttrs {
+  profileId: number;
+  title: string;
+  url: string;
+  order: number;
+  linkTypeId: number;
 }
 
 @Table({ tableName: "link" })
-export class Link extends Model<Link, GroupCreationAttrs> {
+export class Link extends Model<Link, LinkCreationAttrs> {
   @Column({
     type: DataType.INTEGER,
     unique: true,

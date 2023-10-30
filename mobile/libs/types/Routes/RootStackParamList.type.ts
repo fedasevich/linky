@@ -1,9 +1,9 @@
+import { NavigatorScreenParams } from "@react-navigation/native";
 import { RootScreenName } from "../../enums/RootScreenName";
+import { HomeStackParamList } from "./HomeStackParamList.type";
+import { ProfileStackParamList } from "./ProfileStackParamList.type";
 
 export type RootStackParamList = {
-  [RootScreenName.HOME]: undefined;
-  [RootScreenName.CONTACTS]: undefined;
-  [RootScreenName.AUTH]: undefined;
-  [RootScreenName.GALLERY]: undefined;
-  [RootScreenName.TODO_LIST]: undefined;
+  [RootScreenName.HOME]: NavigatorScreenParams<HomeStackParamList>;
+  [RootScreenName.PROFILE]: NavigatorScreenParams<ProfileStackParamList>;
 };

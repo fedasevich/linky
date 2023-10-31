@@ -2,7 +2,7 @@ import { faBuilding } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Linking, Text, TouchableOpacity, View } from "react-native";
 import { LinkTypesMapToButton } from "../../libs/enums/Profile/LinkTypes";
 import { Gradient } from "../../libs/types/Profile/Gradient";
 
@@ -52,7 +52,7 @@ export function LinkButton({
   const { icon, className, isGradient, gradient } = buttonConfig;
 
   const handleLinkPress = () => {
-    // Linking.openURL(url);
+    Linking.openURL(url);
   };
 
   const ButtonComponent = withBackground(TouchableOpacity);

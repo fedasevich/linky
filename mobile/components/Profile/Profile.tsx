@@ -38,8 +38,6 @@ export function Profile({ profile }: ProfileProps) {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const dispatch = useAppDispatch();
 
-  console.log("RERENDER", links.length);
-
   const [linksToRender, setLinksToRender] = useState<Link[]>([]);
 
   useEffect(() => {
